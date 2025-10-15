@@ -1,0 +1,143 @@
+#老师说这和hello world差不多，谁跟你hello了，我咩都唔识啊老师。。
+
+# -*- coding: utf-8 -*-
+"""
+Spyder 编辑器
+
+这是一个临时脚本文件。
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 2 * np.pi, 100)
+y = np.sin(x)
+
+plt.plot(x, y)
+plt.title("Sine Curve")
+plt.show()
+-------------------------------------------------------------------------------------(>^ω^<)喵----------------------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Oct 15 14:33:32 2025
+
+@author: AlisonMoca
+"""
+
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+
+# 数据加载与分割
+iris = load_iris()
+X = iris.data
+y = iris.target
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# 创建k-NN分类器
+k = 3  # 设置k值
+knn = KNeighborsClassifier(n_neighbors=k)
+
+# 训练模型
+knn.fit(X_train, y_train)
+
+# 预测
+y_pred = knn.predict(X_test)
+
+# 结果评估
+print("Classification Report:\n", classification_report(y_test, y_pred))
+print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+# 可视化（前10个预测结果）
+plt.figure(figsize=(10, 5))
+plt.scatter(range(len(y_test)), y_test, color='blue', label='True Labels', alpha=0.6)
+plt.scatter(range(len(y_pred)), y_pred, color='red', label='Predicted Labels', alpha=0.6)
+plt.title('True vs Predicted Labels (k-NN)')
+plt.xlabel('Sample Index')
+plt.ylabel('Class Label')
+plt.legend()
+plt.show()
+-------------------------------------------------------------------------------------(>^ω^<)喵----------------------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Sep 27 09:21:51 2024
+
+@author: 劳斯
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+from sklearn import svm
+from sklearn.metrics import confusion_matrix, classification_report
+
+# 数据加载与分割
+digits = datasets.load_digits()
+X = digits.data
+y = digits.target
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+# LDA模型
+lda = LDA()
+lda.fit(X_train, y_train)
+y_pred_lda = lda.predict(X_test)
+# SVM模型
+svm_model = svm.SVC(kernel='rbf', gamma='scale')   # 支持向量分类， SVR 支持向量回归
+svm_model.fit(X_train, y_train)
+y_pred_svm = svm_model.predict(X_test)
+# 结果评估
+print("LDA Classification Report:\n", classification_report(y_test, y_pred_lda))
+print("SVM Classification Report:\n", classification_report(y_test, y_pred_svm))
+# 可视化（前10个预测结果）
+fig, axes = plt.subplots(2, 10, figsize=(15, 4))
+for ax, img, pred in zip(axes[0], X_test, y_pred_lda):
+    ax.set_axis_off()
+    ax.imshow(img.reshape(8, 8), cmap='gray')
+    ax.set_title(f'LDA: {pred}')
+
+for ax, img, pred in zip(axes[1], X_test, y_pred_svm):
+    ax.set_axis_off()
+    ax.imshow(img.reshape(8, 8), cmap='gray')
+    ax.set_title(f'SVM: {pred}')
+plt.show()
+-------------------------------------------------------------------------------------(>^ω^<)喵----------------------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Oct 13 09:39:04 2025
+
+@author: 劳斯
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn import svm, datasets
+from sklearn.model_selection import train_test_split
+
+# 1. 加载数据（仅取前两维方便画图）
+iris = datasets.load_iris()
+X = iris.data[:, 2:4]
+y = iris.target
+# 2. 拆分训练/测试
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+# 3. 训练SVM分类器（RBF核）
+clf = svm.SVC(kernel='rbf', gamma=0.7, C=1.0)
+clf.fit(X_train, y_train)
+# 4. 生成网格点坐标
+x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5
+y_min, y_max = X[:, 1].min() - 0.5, X[:, 1].max() + 0.5
+xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.02),
+                     np.arange(y_min, y_max, 0.02))
+# 5. 对网格中每个点预测类别
+Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+Z = Z.reshape(xx.shape)
+# 6. 绘制背景颜色
+plt.figure(figsize=(8,6))
+plt.contourf(xx, yy, Z, cmap=plt.cm.coolwarm, alpha=0.3)
+# 7. 绘制样本点
+scatter = plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.coolwarm, edgecolors='k')
+plt.xlabel('Sepal length')
+plt.ylabel('Sepal width')
+plt.title('SVM Decision Boundary (RBF kernel)')
+plt.legend( labels=iris.target_names)
+plt.show()
